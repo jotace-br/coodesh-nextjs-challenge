@@ -1,6 +1,7 @@
 import { Inter as FontSans } from 'next/font/google';
 import './globals.css';
 
+import { Sidebar } from '@components/sidebar';
 import { cn } from '@utils/shadcn-utils';
 
 const fontSans = FontSans({
@@ -14,14 +15,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en' className='antialiased' suppressHydrationWarning>
+    <html
+      lang='en'
+      className='antialiased bg-background text-slate-50'
+      suppressHydrationWarning
+    >
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
           fontSans.variable
         )}
       >
-        {children}
+        <Sidebar content={children} />
       </body>
     </html>
   );
