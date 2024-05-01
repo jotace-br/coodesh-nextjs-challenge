@@ -1,8 +1,9 @@
 import { Inter as FontSans } from 'next/font/google';
 import './globals.css';
 
-import { Sidebar } from '@components/sidebar';
+import { Sidebar } from '@components/sidebar/sidebar';
 import { cn } from '@utils/shadcn-utils';
+import { RadioProvider } from 'contexts/radio-context';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -26,7 +27,9 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Sidebar content={children} />
+        <RadioProvider>
+          <Sidebar content={children} />
+        </RadioProvider>
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+'use client';
 import {
   Tooltip,
   TooltipContent,
@@ -5,6 +6,7 @@ import {
   TooltipTrigger,
 } from '@components/ui/tooltip';
 import { toUpperCase } from '@utils/to-upper-case';
+import { useRadio } from 'contexts/radio-context';
 import { AudioLines } from 'lucide-react';
 import type { IStation } from 'types/IStation';
 import {
@@ -13,19 +15,24 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
+} from '../ui/card';
 
 interface SidebarItemProps {
   station: IStation;
 }
 
 export function SidebarItem({ station }: SidebarItemProps) {
+  const { selectRadio } = useRadio();
+
   return (
     <li>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Card className='relative flex flex-col flex-wrap text-pretty w-full max-h-[200px] gap-2 p-2 hover:shadow-md hover:cursor-pointer hover:bg-primary transition-all'>
+            <Card
+              onClick={() => selectRadio(station)}
+              className='relative flex flex-col flex-wrap text-pretty w-full max-h-[200px] gap-2 p-2 hover:shadow-md hover:cursor-pointer hover:bg-primary transition-all'
+            >
               <AudioLines size='20' className='absolute bottom-4 right-4' />
               <CardHeader className='p-2 z-10'>
                 <CardTitle className='text-xl'>

@@ -1,5 +1,5 @@
 'use client';
-import { SidebarItem } from '@components/sidebar-item';
+import { SidebarItem } from '@components/sidebar/sidebar-item';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import { ScrollArea } from '@components/ui/scroll-area';
@@ -53,6 +53,7 @@ export function SidebarItems() {
       <form onSubmit={handleSearch}>
         <Input
           type='text'
+          name='radio-search'
           placeholder='Search radio stations...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
