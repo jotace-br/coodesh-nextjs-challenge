@@ -3,12 +3,8 @@ import { useRadio } from 'contexts/radio-context';
 import { Radio } from 'lucide-react';
 import Image from 'next/image';
 
-interface PlayerRadioInfoProps {
-  isLoading: boolean;
-}
-
-export function PlayerRadioInfo({ isLoading }: PlayerRadioInfoProps) {
-  const { isPlaying, currentRadio } = useRadio();
+export function PlayerRadioInfo() {
+  const { isPlaying, isFetching, currentRadio } = useRadio();
 
   return (
     <>
@@ -30,7 +26,7 @@ export function PlayerRadioInfo({ isLoading }: PlayerRadioInfoProps) {
 
       <section className='flex items-start gap-2'>
         <div className='flex-col'>
-          {isLoading ? (
+          {isFetching ? (
             <Skeleton className='w-36 h-4 mb-2 bg-stone-600/20' />
           ) : (
             <p className={'first-letter:uppercase text-normal font-semibold'}>
@@ -39,7 +35,7 @@ export function PlayerRadioInfo({ isLoading }: PlayerRadioInfoProps) {
             </p>
           )}
 
-          {isLoading ? (
+          {isFetching ? (
             <Skeleton className='w-24 h-4 bg-stone-600/20' />
           ) : (
             currentRadio?.country && (

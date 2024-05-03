@@ -4,21 +4,19 @@ import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import { ScrollArea } from '@components/ui/scroll-area';
 import { Skeleton } from '@components/ui/skeleton';
-import { useToast } from '@components/ui/use-toast';
 import { fetchSearch } from 'api/fetchSearch';
 import { Search } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 import type { IStation } from 'types/IStation';
 
 export function SidebarItems() {
-  const { toast } = useToast();
-
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<IStation[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
 
-  const fetchResults = async (query, page) => {
+  const fetchResults = async (query: string, page: number) => {
     try {
       setLoading(true);
       const limit = 10;
@@ -26,17 +24,23 @@ export function SidebarItems() {
       const data = await fetchSearch({ query, limit, offset });
       setResults((prevResults) => [...prevResults, ...data]);
     } catch (error) {
-      toast({
-        title: 'Uh oh! Something went wrong.',
+      toast.error('Uh oh! Something went wrong.', {
         description: error.message,
       });
+      console.error(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
+  const handleSearch = async (
+    event?:
+      | React.FormEvent<HTMLFormElement>
+      | React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event) {
+      event.preventDefault();
+    }
     setResults([]);
     setPage(0);
 
@@ -59,6 +63,7 @@ export function SidebarItems() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
           endIcon={Search}
+          onClickEndIcon={handleSearch}
         />
       </form>
 

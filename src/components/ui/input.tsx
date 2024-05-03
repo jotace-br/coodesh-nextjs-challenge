@@ -7,14 +7,25 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   startIcon?: LucideIcon;
   endIcon?: LucideIcon;
+  onClickEndIcon?: () => Promise<void>;
   iconProps?: LucideProps;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, startIcon, endIcon, iconProps = {}, ...props }, ref) => {
+  (
+    {
+      className,
+      type,
+      startIcon,
+      endIcon,
+      onClickEndIcon,
+      iconProps = {},
+      ...props
+    },
+    ref
+  ) => {
     const StartIcon = startIcon;
     const EndIcon = endIcon;
-    const [show, setShow] = React.useState(false);
     const { className: iconClassName, ...iconRest } = iconProps;
 
     return (
@@ -36,9 +47,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {EndIcon && (
-          <div className='absolute right-3 top-1/2 transform -translate-y-1/2'>
-            <EndIcon className='text-muted-foreground text-icons' size={18} />
-          </div>
+          <button
+            onClick={() => onClickEndIcon}
+            className={cn(
+              'absolute right-3 top-1/2 transform -translate-y-1/2',
+              iconClassName
+            )}
+          >
+            <EndIcon
+              className='text-muted-foreground text-icons cursor-pointer'
+              size={18}
+            />
+          </button>
         )}
       </div>
     );

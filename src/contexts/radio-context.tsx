@@ -1,28 +1,30 @@
 'use client';
-import { useToast } from '@components/ui/use-toast';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { IStation } from 'types/IStation';
-
-interface Radio extends IStation {
-  isFavorite?: boolean;
-}
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { toast } from 'sonner';
+import { IRadio } from 'types/IRadio';
 
 interface RadioContextProps {
-  radios: Radio[];
-  currentRadio: Radio | null;
+  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
+  currentRadio: IRadio | null;
   isPlaying: boolean;
+  isFetching: boolean;
   volume: number[];
-  favorites: Radio[];
+  favorites: IRadio[];
   playPause: () => void;
-  selectRadio: (radio: Radio) => void;
+  selectRadio: (radio: IRadio) => void;
   adjustVolume: (newVolume: number[]) => void;
-  addToFavorites: (radio: Radio) => void;
-  removeFromFavorites: (radio: Radio) => void;
-  isFavorite: (radio: Radio) => boolean;
-  createRadio: (radio: Radio) => void;
-  readRadios: () => void;
-  updateRadio: (updatedRadio: Radio) => void;
-  deleteRadio: (radioId: string) => void;
+  addToFavorites: (radio: IRadio) => void;
+  removeFromFavorites: (radio: IRadio) => void;
+  isFavorite: (radio: IRadio) => boolean;
+  updateFavorite: (updatedFavorite: IRadio) => void;
+  deleteFavorite: (favoriteId: string) => void;
+  handleIsFetching: (fetching: boolean) => void;
 }
 
 const RadioContext = createContext<RadioContextProps | undefined>(undefined);
@@ -38,53 +40,101 @@ export const useRadio = (): RadioContextProps => {
 export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [radios, setRadios] = useState<Radio[]>([]);
-  const [currentRadio, setCurrentRadio] = useState<Radio | null>(null);
+  const [currentRadio, setCurrentRadio] = useState<IRadio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState<number[]>([70]);
-  const [favorites, setFavorites] = useState<Radio[]>([]);
-  const { toast } = useToast();
+  const [favorites, setFavorites] = useState<IRadio[]>(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const savedFavorites = localStorage.getItem('favorites');
+      if (savedFavorites) {
+        try {
+          return JSON.parse(savedFavorites);
+        } catch (error) {
+          console.error('Error parsing favorites from localStorage:', error);
+        }
+      }
+    }
+    return [];
+  });
+  const [isFetching, setIsFetching] = useState(false);
 
-  // CRUD operations
-  const createRadio = (radio: Radio) => {
-    setRadios([...radios, radio]);
-  };
+  const audioRef = useRef(null);
 
-  const readRadios = () => {
-    // You can fetch radios from an API or other data source
-    // Here, we'll use a placeholder example
-    const fetchedRadios: Radio[] = [
-      // Add example radios here
-    ];
-    setRadios(fetchedRadios);
-  };
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     const savedFavorites = localStorage.getItem('favorites');
+  //     if (savedFavorites) {
+  //       setFavorites(JSON.parse(savedFavorites));
+  //     }
+  //   }
+  // }, []);
 
-  const updateRadio = (updatedRadio: Radio) => {
-    setRadios((prevRadios) =>
-      prevRadios.map((radio) =>
-        radio.stationuuid === updatedRadio.stationuuid ? updatedRadio : radio
+  // Load favorites from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedFavorites = localStorage.getItem('favorites');
+      if (savedFavorites) {
+        setFavorites(JSON.parse(savedFavorites));
+      }
+    }
+  }, []);
+
+  // Save favorites to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+      } catch (error) {
+        console.error('Error saving favorites to localStorage:', error);
+        toast.error('Failed to save favorites data.');
+      }
+    }
+  }, [favorites]);
+
+  const updateFavorite = (updatedFavorite: IRadio) => {
+    setFavorites((prevFavorites) =>
+      prevFavorites.map((radio) =>
+        radio.stationuuid === updatedFavorite.stationuuid
+          ? updatedFavorite
+          : radio
       )
     );
+
+    if (currentRadio?.stationuuid === updatedFavorite.stationuuid) {
+      setCurrentRadio(updatedFavorite);
+      setIsPlaying(true);
+    }
   };
 
-  const deleteRadio = (radioId: string) => {
-    setRadios((prevRadios) =>
-      prevRadios.filter((radio) => radio.stationuuid !== radioId)
+  const deleteFavorite = (favoriteId: string) => {
+    setFavorites((prevFavorites) =>
+      prevFavorites.filter((radio) => radio.stationuuid !== favoriteId)
     );
+  };
+
+  const handleIsFetching = (fetching: boolean) => {
+    setIsFetching(fetching);
   };
 
   const playPause = () => {
     setIsPlaying(!isPlaying);
+
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        return;
+      }
+      audioRef.current.play();
+    }
   };
 
-  const selectRadio = (radio: Radio) => {
+  const selectRadio = (radio: IRadio) => {
     try {
       setCurrentRadio(radio);
       setIsPlaying(true);
     } catch (error) {
       setCurrentRadio(null);
-      toast({
-        title: 'An error occurred while selecting the radio.',
+      toast.error('An error occurred while selecting the radio.', {
         description: error.message,
       });
     }
@@ -94,38 +144,34 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
     setVolume(newVolume);
   };
 
-  const addToFavorites = (radio: Radio) => {
-    if (!favorites.includes(radio)) {
-      setFavorites([...favorites, radio]);
+  const addToFavorites = (radio: IRadio) => {
+    if (!favorites.find((fav) => fav.stationuuid === radio.stationuuid)) {
       radio.isFavorite = true;
-      updateRadio(radio);
+
+      const updatedFavorites = [...favorites, radio];
+      setFavorites(updatedFavorites);
     }
   };
 
-  const removeFromFavorites = (radio: Radio) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter(
-        (favRadio) => favRadio.stationuuid !== radio.stationuuid
-      )
+  const removeFromFavorites = (radio: IRadio) => {
+    const updatedFavorites = favorites.filter(
+      (fav) => fav.stationuuid !== radio.stationuuid
     );
     radio.isFavorite = false;
-    updateRadio(radio);
+    setFavorites(updatedFavorites);
   };
 
-  const isFavorite = (radio: Radio): boolean => {
+  const isFavorite = (radio: IRadio): boolean => {
     return favorites.some(
-      (favRadio) => favRadio.stationuuid === radio.stationuuid
+      (favRadio) => favRadio?.stationuuid === radio?.stationuuid
     );
   };
 
-  useEffect(() => {
-    readRadios();
-  }, []);
-
   const contextValue: RadioContextProps = {
-    radios,
+    audioRef,
     currentRadio,
     isPlaying,
+    isFetching,
     volume,
     favorites,
     playPause,
@@ -134,10 +180,9 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
     addToFavorites,
     removeFromFavorites,
     isFavorite,
-    createRadio,
-    readRadios,
-    updateRadio,
-    deleteRadio,
+    updateFavorite,
+    deleteFavorite,
+    handleIsFetching,
   };
 
   return (

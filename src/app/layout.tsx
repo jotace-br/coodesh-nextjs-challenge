@@ -2,6 +2,7 @@ import { Inter as FontSans } from 'next/font/google';
 import './globals.css';
 
 import { Sidebar } from '@components/sidebar/sidebar';
+import { Toaster } from '@components/ui/sonner';
 import { cn } from '@utils/shadcn-utils';
 import { RadioProvider } from 'contexts/radio-context';
 
@@ -27,9 +28,12 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <RadioProvider>
-          <Sidebar content={children} />
-        </RadioProvider>
+        <main>
+          <RadioProvider>
+            <Sidebar content={children} />
+          </RadioProvider>
+        </main>
+        <Toaster />
       </body>
     </html>
   );

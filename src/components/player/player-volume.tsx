@@ -8,12 +8,8 @@ import {
 import { useRadio } from 'contexts/radio-context';
 import { Volume1, Volume2, VolumeX } from 'lucide-react';
 
-interface PlayerVolumeProps {
-  audioRef: React.RefObject<HTMLAudioElement>;
-}
-
-export function PlayerVolume({ audioRef }: PlayerVolumeProps) {
-  const { volume, adjustVolume } = useRadio();
+export function PlayerVolume() {
+  const { volume, adjustVolume, audioRef } = useRadio();
 
   const handleMute = () => {
     const newVolume = volume[0] === 0 ? 100 : 0;
