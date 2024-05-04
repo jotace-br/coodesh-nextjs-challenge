@@ -11,6 +11,13 @@ const fontSans = FontSans({
   variable: '--font-sans',
 });
 
+export const metadata = {
+  title: 'Radio Seeker',
+  description:
+    'Radio Seeker is a radio station search engine. Search for your favorite radio stations and listen to them for free.',
+  keywords: 'radio, music, search, station',
+};
+
 export default function RootLayout({
   children,
 }: {
