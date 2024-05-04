@@ -24,7 +24,6 @@ interface RadioContextProps {
   removeFromFavorites: (radio: IRadio) => void;
   isFavorite: (radio: IRadio) => boolean;
   updateFavorite: (updatedFavorite: IRadio) => void;
-  deleteFavorite: (favoriteId: string) => void;
   handleIsFetching: (fetching: boolean) => void;
 }
 
@@ -43,76 +42,48 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [currentRadio, setCurrentRadio] = useState<IRadio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState<number[]>(() => {
-    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
-      return [70];
-    }
+  const [volume, setVolume] = useState<number[]>([70]);
 
-    const storedVolume = localStorage.getItem('radio-volume');
-    if (storedVolume === null) {
-      return [70];
-    }
-
-    try {
-      const parsedVolume = JSON.parse(storedVolume);
-      if (Array.isArray(parsedVolume) && parsedVolume.every(Number.isFinite)) {
-        return parsedVolume;
-      }
-    } catch (error) {
-      console.error('Error parsing volume data from localStorage:', error);
-    }
-
-    return [70];
-  });
-
-  const [favorites, setFavorites] = useState<IRadio[]>(
-    JSON.parse(window.localStorage.getItem('favorites') || '[]')
-  );
+  const [favorites, setFavorites] = useState<IRadio[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const audioRef = useRef(null);
 
-  // Save volume to localStorage whenever it changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('radio-volume', JSON.stringify(volume));
-      } catch (error) {
-        console.error('Error saving volume to localStorage:', error);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const storedVolume = window.localStorage.getItem('radio-volume');
+      if (storedVolume) {
+        setVolume(JSON.parse(storedVolume));
       }
     }
-  }, [volume]);
+  }, []);
 
-  // Save favorites to localStorage whenever it changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-      } catch (error) {
-        console.error('Error saving favorites to localStorage:', error);
-        toast.error('Failed to save favorites data.');
-      }
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const storedFavorites = window.localStorage.getItem('favorites');
+      setFavorites(storedFavorites ? JSON.parse(storedFavorites) : []);
     }
-  }, [favorites]);
+  }, []);
+
+  const saveFavoritesToLocalStorage = (updatedFavorites: IRadio[]) => {
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+  };
 
   const updateFavorite = (updatedFavorite: IRadio) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.map((radio) =>
+    setFavorites((prevFavorites) => {
+      const updatedFavorites = prevFavorites.map((radio) =>
         radio.stationuuid === updatedFavorite.stationuuid
           ? updatedFavorite
           : radio
-      )
-    );
+      );
+
+      saveFavoritesToLocalStorage(updatedFavorites);
+      return updatedFavorites;
+    });
 
     if (currentRadio?.stationuuid === updatedFavorite.stationuuid) {
       setCurrentRadio(updatedFavorite);
       setIsPlaying(true);
     }
-  };
-
-  const deleteFavorite = (favoriteId: string) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter((radio) => radio.stationuuid !== favoriteId)
-    );
   };
 
   const handleIsFetching = (fetching: boolean) => {
@@ -163,6 +134,7 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const adjustVolume = (newVolume: number[]) => {
     setVolume(newVolume);
+    localStorage.setItem('radio-volume', JSON.stringify(newVolume));
   };
 
   const addToFavorites = (radio: IRadio) => {
@@ -171,6 +143,7 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const updatedFavorites = [...favorites, radio];
       setFavorites(updatedFavorites);
+      saveFavoritesToLocalStorage(updatedFavorites);
     }
   };
 
@@ -180,6 +153,7 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
     );
     radio.isFavorite = false;
     setFavorites(updatedFavorites);
+    saveFavoritesToLocalStorage(updatedFavorites);
   };
 
   const isFavorite = (radio: IRadio): boolean => {
@@ -202,7 +176,6 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
     removeFromFavorites,
     isFavorite,
     updateFavorite,
-    deleteFavorite,
     handleIsFetching,
   };
 

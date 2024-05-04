@@ -56,7 +56,7 @@ interface TableDropdownProps {
 
 export function TableDropdown({ station }: TableDropdownProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const { deleteFavorite, updateFavorite } = useRadio();
+  const { removeFromFavorites, updateFavorite } = useRadio();
 
   return (
     <div className='text-right'>
@@ -88,7 +88,7 @@ export function TableDropdown({ station }: TableDropdownProps) {
 
           {/* Delete station content */}
           <DeleteContent
-            handleDeleteFavorite={deleteFavorite}
+            handleDeleteFavorite={removeFromFavorites}
             station={station}
           />
 
@@ -108,7 +108,7 @@ function DeleteContent({
   handleDeleteFavorite,
   station,
 }: {
-  handleDeleteFavorite: (stationuuid: string) => void;
+  handleDeleteFavorite: (station: IRadio) => void;
   station: IRadio;
 }) {
   return (
@@ -122,9 +122,7 @@ function DeleteContent({
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction
-          onClick={() => handleDeleteFavorite(station.stationuuid)}
-        >
+        <AlertDialogAction onClick={() => handleDeleteFavorite(station)}>
           Continue
         </AlertDialogAction>
       </AlertDialogFooter>

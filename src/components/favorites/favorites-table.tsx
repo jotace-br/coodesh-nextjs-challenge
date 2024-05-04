@@ -10,7 +10,9 @@ export function FavoritesTable() {
 
   return (
     <div className='py-2 w-full h-full overflow-y-auto'>
-      <h2 className='text-2xl font-bold text-slate-50'>Favorite radios:</h2>
+      <h2 className='text-xl font-bold text-slate-50'>
+        Your favorite radio stations
+      </h2>
 
       <div className='hidden md:block'>
         <DataTable columns={columns} data={favorites} />
