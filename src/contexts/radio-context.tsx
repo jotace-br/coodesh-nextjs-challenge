@@ -43,41 +43,11 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
   const [currentRadio, setCurrentRadio] = useState<IRadio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState<number[]>([70]);
-  const [favorites, setFavorites] = useState<IRadio[]>(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedFavorites = localStorage.getItem('favorites');
-      if (savedFavorites) {
-        try {
-          return JSON.parse(savedFavorites);
-        } catch (error) {
-          console.error('Error parsing favorites from localStorage:', error);
-        }
-      }
-    }
-    return [];
-  });
+  const [favorites, setFavorites] = useState<IRadio[]>(
+    JSON.parse(localStorage.getItem('favorites')) || []
+  );
   const [isFetching, setIsFetching] = useState(false);
-
   const audioRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined') {
-  //     const savedFavorites = localStorage.getItem('favorites');
-  //     if (savedFavorites) {
-  //       setFavorites(JSON.parse(savedFavorites));
-  //     }
-  //   }
-  // }, []);
-
-  // Load favorites from localStorage on component mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedFavorites = localStorage.getItem('favorites');
-      if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites));
-      }
-    }
-  }, []);
 
   // Save favorites to localStorage whenever it changes
   useEffect(() => {
