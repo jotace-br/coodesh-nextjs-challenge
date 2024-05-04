@@ -1,4 +1,5 @@
 'use client';
+
 import React, {
   createContext,
   useContext,
@@ -42,11 +43,28 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [currentRadio, setCurrentRadio] = useState<IRadio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState<number[]>(
-    JSON.parse(localStorage.getItem('radio-volume')) || [70]
-  );
+  const [volume, setVolume] = useState<number[]>(() => {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const storedVolume = localStorage.getItem('radio-volume');
+      if (storedVolume !== null) {
+        try {
+          const parsedVolume = JSON.parse(storedVolume);
+          if (
+            Array.isArray(parsedVolume) &&
+            parsedVolume.every(Number.isFinite)
+          ) {
+            return parsedVolume;
+          }
+        } catch (error) {
+          console.error('Error parsing volume data from localStorage:', error);
+        }
+      }
+    }
+    return [70];
+  });
+
   const [favorites, setFavorites] = useState<IRadio[]>(
-    JSON.parse(localStorage.getItem('favorites')) || []
+    JSON.parse(window.localStorage.getItem('favorites') || '[]')
   );
   const [isFetching, setIsFetching] = useState(false);
   const audioRef = useRef(null);
