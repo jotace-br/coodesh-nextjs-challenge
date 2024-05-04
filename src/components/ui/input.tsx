@@ -40,7 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             'flex h-9 w-full rounded-md border border-input border-icons text-gray-950 bg-slate-100 px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
             startIcon ? 'pl-8' : '',
-            endIcon ? 'pr-8' : '',
+            endIcon ? 'pr-4' : '',
             className
           )}
           ref={ref}
@@ -50,12 +50,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <button
             onClick={() => onClickEndIcon}
             className={cn(
-              'absolute right-3 top-1/2 transform -translate-y-1/2',
+              'absolute right-2 top-1/2 transform -translate-y-1/2 rounded-md bg-sidebar/80 shadow-sm p-1 cursor-pointer',
               iconClassName
             )}
           >
             <EndIcon
-              className='text-muted-foreground text-icons cursor-pointer'
+              className='text-muted-foreground text-white cursor-pointer'
               size={18}
             />
           </button>

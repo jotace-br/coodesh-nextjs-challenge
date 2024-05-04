@@ -58,7 +58,7 @@ export function SidebarItems() {
         <Input
           type='text'
           name='radio-search'
-          placeholder='Search radio stations...'
+          placeholder='Search for radio stations...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
