@@ -47,7 +47,7 @@ export function SidebarItem({ station }: SidebarItemProps) {
               </CardHeader>
               {station.language && (
                 <CardContent className='px-2'>
-                  <p className='text-sm font-extralight leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+                  <p className='text-xs font-extralight leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
                     {station.language &&
                       `Language: ${toUpperCase(station.language)}`}
                   </p>
