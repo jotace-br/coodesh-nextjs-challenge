@@ -113,18 +113,32 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const selectRadio = (radio: IRadio) => {
     try {
-      if (radio.bitrate === 0) {
+      if (radio === null) {
+        setCurrentRadio(null);
+        setIsPlaying(false);
+        return;
+      }
+
+      if (radio?.bitrate === 0) {
         throw new Error('This radio station is currently offline.');
       }
 
-      setCurrentRadio(radio);
-      setIsPlaying(true);
+      fetch(
+        `http://[2a03:4000:37:42:c4fe:4cff:fea7:8941]/json/url/${radio?.stationuuid}`
+      ).then((res) => {
+        if (res.ok) {
+          setCurrentRadio(radio);
+          setIsPlaying(true);
+        } else {
+          throw new Error('Failed to fetch the radio stream URL.');
+        }
+      });
     } catch (error) {
       setCurrentRadio(null);
       toast.error('An error occurred while selecting the radio.', {
         description: error.message,
       });
-      console.error(error);
+      setIsFetching(false);
     }
   };
 

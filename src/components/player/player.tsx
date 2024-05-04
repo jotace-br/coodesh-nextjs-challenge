@@ -8,8 +8,14 @@ import { PlayerRadioInfo } from './player-radio-info';
 import { PlayerVolume } from './player-volume';
 
 export function Player() {
-  const { currentRadio, volume, selectRadio, audioRef, handleIsFetching } =
-    useRadio();
+  const {
+    currentRadio,
+    volume,
+    selectRadio,
+    audioRef,
+    handleIsFetching,
+    playPause,
+  } = useRadio();
 
   useEffect(() => {
     if (audioRef.current) {
@@ -19,7 +25,7 @@ export function Player() {
 
   useEffect(() => {
     if (audioRef.current && currentRadio) {
-      audioRef.current.src = currentRadio.url_resolved;
+      audioRef.current.src = currentRadio.url || currentRadio.url_resolved;
 
       try {
         handleIsFetching(true);
@@ -46,13 +52,24 @@ export function Player() {
     handleIsFetching(true);
   };
 
+  const handleAudioError = () => {
+    toast.error('Failed to load radio stream.', {
+      description:
+        'The radio stream could not be loaded. Please try again later.',
+    });
+    handleIsFetching(false);
+    selectRadio(null);
+    playPause();
+  };
+
   return (
     <div className='fill-available w-full h-40 fixed bottom-0 content-center sm:h-20 bg-sidebar p-4'>
       <audio
         ref={audioRef}
-        src={currentRadio?.url_resolved}
+        src={currentRadio?.url || currentRadio?.url_resolved}
         onLoadedData={handleAudioLoadedData}
         onWaiting={handleAudioWaiting}
+        onError={handleAudioError}
         controls
         hidden
       />
