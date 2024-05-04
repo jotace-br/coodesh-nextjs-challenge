@@ -54,17 +54,18 @@ export function SidebarItems() {
 
   return (
     <>
-      <form onSubmit={handleSearch}>
+      <form onSubmit={handleSearch} className='flex gap-2'>
         <Input
           type='text'
           name='radio-search'
-          placeholder='Search for radio stations...'
+          placeholder='Search radios...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
-          endIcon={Search}
-          onClickEndIcon={handleSearch}
         />
+        <Button type='submit' className='bg-card'>
+          <Search />
+        </Button>
       </form>
 
       <ScrollArea className='h-full w-full pb-28 mb:pb-20 pr-4'>
