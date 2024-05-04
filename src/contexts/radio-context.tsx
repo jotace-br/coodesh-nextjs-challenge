@@ -100,6 +100,10 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const selectRadio = (radio: IRadio) => {
     try {
+      if (radio.bitrate === 0) {
+        throw new Error('This radio station is currently offline.');
+      }
+
       setCurrentRadio(radio);
       setIsPlaying(true);
     } catch (error) {
