@@ -42,12 +42,25 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [currentRadio, setCurrentRadio] = useState<IRadio | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState<number[]>([70]);
+  const [volume, setVolume] = useState<number[]>(
+    JSON.parse(localStorage.getItem('radio-volume')) || [70]
+  );
   const [favorites, setFavorites] = useState<IRadio[]>(
     JSON.parse(localStorage.getItem('favorites')) || []
   );
   const [isFetching, setIsFetching] = useState(false);
   const audioRef = useRef(null);
+
+  // Save volume to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('radio-volume', JSON.stringify(volume));
+      } catch (error) {
+        console.error('Error saving volume to localStorage:', error);
+      }
+    }
+  }, [volume]);
 
   // Save favorites to localStorage whenever it changes
   useEffect(() => {
@@ -111,6 +124,7 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
       toast.error('An error occurred while selecting the radio.', {
         description: error.message,
       });
+      console.error(error);
     }
   };
 
