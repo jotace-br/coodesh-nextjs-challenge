@@ -134,7 +134,6 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       });
     } catch (error) {
-      setCurrentRadio(null);
       toast.error('An error occurred while selecting the radio.', {
         description: error.message,
       });

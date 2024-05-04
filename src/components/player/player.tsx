@@ -25,22 +25,17 @@ export function Player() {
 
   useEffect(() => {
     if (audioRef.current && currentRadio) {
-      audioRef.current.src = currentRadio.url || currentRadio.url_resolved;
+      handleIsFetching(true);
 
-      try {
-        handleIsFetching(true);
-        if (audioRef.current.paused) {
-          audioRef.current.play();
-        }
-      } catch (error) {
-        toast.error('Uh oh! Something went wrong.', {
-          description: error.message,
-        });
-        console.error(error.message);
-        selectRadio(null);
-      } finally {
-        handleIsFetching(false);
+      if (!audioRef.current.paused) {
+        audioRef.current.pause();
       }
+
+      audioRef.current.src = currentRadio.url_resolved || currentRadio.url;
+
+      audioRef.current.play().finally(() => {
+        handleIsFetching(false);
+      });
     }
   }, [currentRadio]);
 
