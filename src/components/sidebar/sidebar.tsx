@@ -11,9 +11,25 @@ export function Sidebar({ content }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    const updateBodyOverflow = () => {
+      if (window.innerWidth < 768) {
+        document.body.style.overflow = isOpen ? 'hidden' : 'visible';
+      } else {
+        document.body.style.overflow = 'visible';
+      }
+    };
+
+    updateBodyOverflow();
+
+    const handleResize = () => {
+      updateBodyOverflow();
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      document.body.style.overflow = 'auto';
+      window.removeEventListener('resize', handleResize);
+      document.body.style.overflow = 'visible';
     };
   }, [isOpen]);
 
@@ -42,7 +58,7 @@ export function Sidebar({ content }: SidebarProps) {
       </nav>
 
       <button
-        className={`absolute z-20 top-3 bg-sidebar text-white p-2 rounded-r shadow-md ${
+        className={`fixed z-20 top-3 bg-sidebar text-white p-2 rounded-r shadow-md ${
           isOpen ? 'hidden left-64' : 'block'
         }`}
         onClick={() => setIsOpen((previousOpen) => !previousOpen)}
