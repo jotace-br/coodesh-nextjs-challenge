@@ -16,7 +16,7 @@ export function PlayerRadioInfo() {
               alt={currentRadio?.name}
               width={50}
               height={50}
-              className='aspect-square object-contain p-0.5'
+              className='aspect-square object-contain p-0.5 rounded-md'
             />
           </div>
         ) : (

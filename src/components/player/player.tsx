@@ -47,6 +47,10 @@ export function Player() {
     handleIsFetching(true);
   };
 
+  const handleAudioCanPlay = () => {
+    handleIsFetching(false);
+  };
+
   const handleAudioError = () => {
     toast.error('Failed to load radio stream.', {
       description:
@@ -64,6 +68,7 @@ export function Player() {
         src={currentRadio?.url || currentRadio?.url_resolved}
         onLoadedData={handleAudioLoadedData}
         onWaiting={handleAudioWaiting}
+        onCanPlay={handleAudioCanPlay}
         onError={handleAudioError}
         controls
         hidden

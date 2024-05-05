@@ -1,5 +1,4 @@
 'use client';
-import { Badge } from '@components/ui/badge';
 import { useRadio } from 'contexts/radio-context';
 import { useEffect, useState } from 'react';
 import { IRadio } from 'types/IRadio';
@@ -71,8 +70,8 @@ export function ResponsiveTable() {
               className='relative min-h-24 flex items-center space-x-3 rounded-lg bg-card p-4 shadow ring-1 ring-black ring-opacity-5'
             >
               <div className='min-w-0 flex-1'>
-                <div className='flex items-center justify-between space-x-3'>
-                  <section className='flex gap-2'>
+                <div className='flex items-center justify-between'>
+                  <section className='flex gap-2 max-w-2/3'>
                     <PlayFromTable rowData={favorite} />
 
                     <div className='flex-grow-0'>
@@ -84,24 +83,10 @@ export function ResponsiveTable() {
                           {favorite.country}
                         </p>
                       </div>
-
-                      {!!favorite.tags.length && (
-                        <span className='flex flex-wrap justify-start items-center gap-2 mt-2'>
-                          {favorite.tags.split(',').map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant='secondary'
-                              className='capitalize text-nowrap'
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </span>
-                      )}
                     </div>
                   </section>
 
-                  <section className='flex-grow-1'>
+                  <section className='max-w-8'>
                     <TableDropdown station={favorite} />
                   </section>
                 </div>

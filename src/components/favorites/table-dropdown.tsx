@@ -38,7 +38,7 @@ import {
 import { Input } from '@components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRadio } from 'contexts/radio-context';
-import { MoreHorizontal } from 'lucide-react';
+import { EllipsisVertical } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -64,9 +64,12 @@ export function TableDropdown({ station }: TableDropdownProps) {
         <AlertDialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='ghost' className='relative h-8 w-8 p-0'>
+              <Button
+                variant='ghost'
+                className='relative h-8 w-8 p-0 justify-end'
+              >
                 <span className='sr-only'>Open menu</span>
-                <MoreHorizontal className='h-4 w-4' />
+                <EllipsisVertical className='h-4 w-4' />
               </Button>
             </DropdownMenuTrigger>
 
