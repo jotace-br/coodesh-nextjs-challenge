@@ -69,8 +69,8 @@ export function SidebarItems() {
         </Button>
       </form>
 
-      <ScrollArea className='h-full w-full pb-28 mb:pb-20 pr-4'>
-        <ul className='space-y-4'>
+      <ScrollArea className='h-full w-full pb-28 mb:pb-20 transition-all duration-300 hover:pr-4'>
+        <div className='space-y-4'>
           {loading
             ? [...Array(10)].map((_, i) => (
                 <Skeleton key={i} className='w-full h-[150px] rounded-xl' />
@@ -78,7 +78,7 @@ export function SidebarItems() {
             : results.map((station) => (
                 <SidebarItem key={station.stationuuid} station={station} />
               ))}
-        </ul>
+        </div>
 
         {results.length >= 10 && (
           <Button
