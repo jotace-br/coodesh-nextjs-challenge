@@ -33,7 +33,8 @@ export async function TopClicks() {
             <CarouselItem key={station.stationuuid} className='basis-auto'>
               <PlayerCard
                 station={station}
-                className='w-52 h-fit aspect-square'
+                className='w-52 h-fit max-h-48 aspect-square flex-row content-start gap-2 p-2'
+                showTags
               />
             </CarouselItem>
           ))}

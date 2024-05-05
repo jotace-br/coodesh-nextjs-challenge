@@ -1,4 +1,5 @@
 'use client';
+import { Badge } from '@components/ui/badge';
 import { Label } from '@components/ui/label';
 import {
   Tooltip,
@@ -17,9 +18,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 interface SidebarItemProps {
   station: IStation;
   className?: string;
+  showTags?: boolean;
 }
 
-export function PlayerCard({ station, className }: SidebarItemProps) {
+export function PlayerCard({
+  station,
+  className,
+  showTags = false,
+}: SidebarItemProps) {
   const { selectRadio, isFavorite, removeFromFavorites, addToFavorites } =
     useRadio();
 
@@ -50,7 +56,7 @@ export function PlayerCard({ station, className }: SidebarItemProps) {
                 className
               )}
             >
-              <CardHeader className='flex flex-row items-center gap-2 p-0 z-10'>
+              <CardHeader className='w-full flex flex-row items-start gap-2 p-0 z-10 select-none'>
                 <div className='flex items-center justify-center rounded-md bg-primary/20 w-[50px] h-[50px] flex-shrink-0'>
                   {station.favicon ? (
                     <Image
@@ -65,22 +71,40 @@ export function PlayerCard({ station, className }: SidebarItemProps) {
                   )}
                 </div>
 
-                <div>
-                  <CardTitle className='text-base text-pretty first-letter:uppercase'>
-                    {station.name.replaceAll(' ', '')
-                      ? station.name
-                      : 'Unnamed station'}
-                  </CardTitle>
-                </div>
+                <CardTitle
+                  className='text-base text-pretty first-letter:uppercase'
+                  style={{ marginTop: 0 }}
+                >
+                  {station.name.replaceAll(' ', '')
+                    ? station.name
+                    : 'Unnamed station'}
+                </CardTitle>
               </CardHeader>
 
-              <CardContent className='px-0 space-y-1'>
+              <CardContent className='w-full px-0 space-y-1 select-none'>
                 <Label className='line-clamp-3 leading-snug'>
                   {station.country} {station.state && ` / ${station.state}`}{' '}
                   {station.language && (
                     <span className='capitalize'>({station.language})</span>
                   )}
                 </Label>
+
+                {showTags && !!station.tags.length && (
+                  <div className='flex gap-2 flex-wrap pt-2'>
+                    {station.tags
+                      .split(',')
+                      .splice(0, 2)
+                      .map((tag) => (
+                        <Badge
+                          className='capitalize shadow-sm select-none text-center'
+                          variant='secondary'
+                          key={tag}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TooltipTrigger>
