@@ -1,6 +1,6 @@
 ## Projeto: Radio Seeker
 
-  <div align="justify" style="margin-bottom: 2em;">
+  <div align="center" style="margin-bottom: 2em;">
     <div style="display: flex; align-items: center; justify-content: center; gap: 2em; width: 100%;">
       <img src="assets/desktop.png" alt="desktop" style="vertical-align: top; object-fit:contain;" width="50%" />
       <img src="assets/mobile.png" alt="mobile" height="400px" style="object-fit:contain;" />
