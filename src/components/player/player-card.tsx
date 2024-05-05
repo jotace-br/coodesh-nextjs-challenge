@@ -52,7 +52,7 @@ export function PlayerCard({
             <Card
               onClick={handleSelectStation}
               className={cn(
-                'flex flex-col flex-wrap text-pretty w-full max-h-[200px] gap-1 p-2 pb-4 hover:shadow-md hover:cursor-pointer hover:bg-primary transition-all',
+                'flex flex-col flex-wrap text-pretty w-full max-h-fit gap-1 p-2 pb-4 hover:shadow-md hover:cursor-pointer hover:bg-primary transition-all',
                 className
               )}
             >

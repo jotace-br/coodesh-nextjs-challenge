@@ -8,30 +8,43 @@ interface SidebarProps {
 }
 
 export function Sidebar({ content }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [prevWidth, setPrevWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    const updateBodyOverflow = () => {
-      if (window.innerWidth < 768) {
-        document.body.style.overflow = isOpen ? 'hidden' : 'visible';
-      } else {
-        document.body.style.overflow = 'visible';
-      }
-    };
-
-    updateBodyOverflow();
-
     const handleResize = () => {
-      updateBodyOverflow();
+      const currentWidth = window.innerWidth;
+
+      // If the screen width changes view mode (mobile/desktop), update isOpen
+      if (
+        (prevWidth >= 768 && currentWidth < 768) ||
+        (prevWidth < 768 && currentWidth >= 768)
+      ) {
+        const shouldBeOpen = currentWidth >= 768;
+        setIsOpen(shouldBeOpen);
+      }
+
+      document.body.style.overflow =
+        currentWidth < 768 ? (isOpen ? 'hidden' : 'visible') : 'visible';
+
+      // Update previous width
+      setPrevWidth(currentWidth);
     };
 
     window.addEventListener('resize', handleResize);
+
+    // Initial setup
+    handleResize();
 
     return () => {
       window.removeEventListener('resize', handleResize);
       document.body.style.overflow = 'visible';
     };
-  }, [isOpen]);
+  }, [isOpen, prevWidth]);
+
+  const toggleSidebar = () => {
+    setIsOpen((previousOpen) => !previousOpen);
+  };
 
   return (
     <div className='relative flex h-screen'>
@@ -45,10 +58,7 @@ export function Sidebar({ content }: SidebarProps) {
             <h1 className='text-2xl font-bold tracking-tighter'>Seeker</h1>
             <Radio />
           </div>
-          <button
-            className='cursor-pointer'
-            onClick={() => setIsOpen((previousOpen) => !previousOpen)}
-          >
+          <button className='cursor-pointer' onClick={toggleSidebar}>
             <span className='sr-only'>Toggle sidebar</span>
             <Menu />
           </button>
@@ -61,7 +71,7 @@ export function Sidebar({ content }: SidebarProps) {
         className={`fixed z-20 top-3 bg-sidebar text-white p-2 rounded-r shadow-md ${
           isOpen ? 'hidden left-64' : 'block'
         }`}
-        onClick={() => setIsOpen((previousOpen) => !previousOpen)}
+        onClick={toggleSidebar}
       >
         <span className='sr-only'>Toggle sidebar</span>
         <Menu />
