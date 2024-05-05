@@ -1,5 +1,5 @@
 'use client';
-import { SidebarItem } from '@components/sidebar/sidebar-item';
+import { PlayerCard } from '@components/player/player-card';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import { ScrollArea } from '@components/ui/scroll-area';
@@ -76,7 +76,7 @@ export function SidebarItems() {
                 <Skeleton key={i} className='w-full h-[150px] rounded-xl' />
               ))
             : results.map((station) => (
-                <SidebarItem key={station.stationuuid} station={station} />
+                <PlayerCard key={station.stationuuid} station={station} />
               ))}
         </div>
 

@@ -19,7 +19,7 @@ interface SidebarItemProps {
   className?: string;
 }
 
-export function SidebarItem({ station, className }: SidebarItemProps) {
+export function PlayerCard({ station, className }: SidebarItemProps) {
   const { selectRadio, isFavorite, removeFromFavorites, addToFavorites } =
     useRadio();
 

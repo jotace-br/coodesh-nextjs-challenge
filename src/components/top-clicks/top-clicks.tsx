@@ -1,4 +1,4 @@
-import { SidebarItem } from '@components/sidebar/sidebar-item';
+import { PlayerCard } from '@components/player/player-card';
 import {
   Carousel,
   CarouselContent,
@@ -31,7 +31,7 @@ export async function TopClicks() {
         <CarouselContent className='w-0 md:w-96'>
           {data.map((station) => (
             <CarouselItem key={station.stationuuid} className='basis-auto'>
-              <SidebarItem
+              <PlayerCard
                 station={station}
                 className='w-52 h-fit aspect-square'
               />
@@ -46,19 +46,6 @@ export async function TopClicks() {
       </Carousel>
 
       <br />
-
-      {/* <ScrollArea className='whitespace-nowrap scroll-smooth rounded-xl border'>
-        <div className='flex w-0 space-x-3 p-2 pb-3 flex-grow-0'>
-          {data.map((station) => (
-            <SidebarItem
-              station={station}
-              key={station.stationuuid}
-              className='w-52 h-48'
-            />
-          ))}
-        </div>
-        <ScrollBar orientation='horizontal' />
-      </ScrollArea> */}
     </div>
   );
 }
