@@ -90,13 +90,13 @@ export function PlayerCard({
                 </Label>
 
                 {showTags && !!station.tags.length && (
-                  <div className='flex gap-2 flex-wrap pt-2'>
+                  <div className='flex gap-1 flex-wrap pt-1'>
                     {station.tags
                       .split(',')
                       .splice(0, 2)
                       .map((tag) => (
                         <Badge
-                          className='capitalize shadow-sm select-none text-center'
+                          className='text-xs capitalize shadow-sm select-none text-center'
                           variant='secondary'
                           key={tag}
                         >
@@ -118,7 +118,7 @@ export function PlayerCard({
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className='absolute right-2 bottom-3 bg-transparent p-1'
+              className='absolute right-2 bottom-2 bg-transparent p-1'
               onClick={handleAddToFavorites}
             >
               <span className='sr-only'>
