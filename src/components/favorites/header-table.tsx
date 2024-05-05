@@ -21,7 +21,7 @@ import { FilterSelectType } from './data-table';
 interface HeaderTableProps<TData> {
   filterBy: string;
   setFilterBy: (value: SetStateAction<FilterSelectType>) => void;
-  table: Table<TData>;
+  table?: Table<TData>;
 }
 
 export function HeaderTable<TData>({
@@ -47,7 +47,7 @@ export function HeaderTable<TData>({
           value={filterBy}
           onValueChange={(value) => setFilterBy(value as FilterSelectType)}
         >
-          <SelectTrigger className='w-full md:w-[180px]'>
+          <SelectTrigger className='w-full md:w-[180px]' aria-label='Filter by'>
             <SelectValue placeholder='Filter by' />
           </SelectTrigger>
           <SelectContent>

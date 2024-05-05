@@ -64,6 +64,7 @@ export function SidebarItems() {
           onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
         />
         <Button type='submit' className='bg-card'>
+          <span className='sr-only'>Search radio</span>
           <Search />
         </Button>
       </form>

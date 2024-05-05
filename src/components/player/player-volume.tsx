@@ -30,6 +30,7 @@ export function PlayerVolume() {
         <Tooltip>
           <TooltipTrigger asChild>
             <button onClick={handleMute}>
+              <span className='sr-only'>Mute/Unmute</span>
               {volume[0] === 0 ? (
                 <VolumeX />
               ) : volume[0] < 50 ? (

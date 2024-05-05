@@ -1,20 +1,12 @@
 'use client';
 import { Badge } from '@components/ui/badge';
-import { Button } from '@components/ui/button';
-import { Input } from '@components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@components/ui/select';
 import { useRadio } from 'contexts/radio-context';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { IRadio } from 'types/IRadio';
 import { FilterSelectType } from './data-table';
 import { PlayFromTable } from './play-from-table';
+import { ResponsiveHeaderTable } from './responsive-header-table';
+import { ResponsivePagination } from './responsive-pagination';
 import { TableDropdown } from './table-dropdown';
 
 export function ResponsiveTable() {
@@ -64,31 +56,12 @@ export function ResponsiveTable() {
 
   return (
     <section>
-      <div className='flex flex-wrap md:mb-0 items-center md:justify-between gap-2'>
-        <div className='flex flex-wrap md:flex-nowrap items-center py-0 md:py-4 gap-2 w-full md:w-1/2'>
-          <Input
-            placeholder={`Filter by ${
-              filterBy === 'name' ? 'station' : filterBy
-            }...`}
-            value={filterValue}
-            onChange={(event) => setFilterValue(event.target.value)}
-          />
-
-          <Select
-            value={filterBy}
-            onValueChange={(value) => setFilterBy(value as FilterSelectType)}
-          >
-            <SelectTrigger className='w-full md:w-[180px]'>
-              <SelectValue placeholder='Filter by' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='name'>Station</SelectItem>
-              <SelectItem value='country'>Country</SelectItem>
-              <SelectItem value='tags'>Tags</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <ResponsiveHeaderTable
+        filterBy={filterBy}
+        setFilterBy={setFilterBy}
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
+      />
 
       <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
         {currentData.length ? (
@@ -142,52 +115,14 @@ export function ResponsiveTable() {
         )}
       </div>
 
-      {/* Pagination */}
-      <div className='mt-4 flex flex-wrap gap-2 justify-center items-center sm:justify-between'>
-        <div className='flex items-center justify-center text-sm font-medium'>
-          <div className='flex items-center space-x-2'>
-            <p className='text-sm font-medium'>Rows per page</p>
-            <Select
-              value={rowsPerPage.toString()}
-              onValueChange={handleRowsPerPageChange}
-            >
-              <SelectTrigger className='w-24'>
-                <SelectValue placeholder='Rows per page' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='10'>10</SelectItem>
-                <SelectItem value='20'>20</SelectItem>
-                <SelectItem value='50'>50</SelectItem>
-                <SelectItem value='100'>100</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className='flex items-center gap-2 md:gap-0 md:space-x-2'>
-          <span className='mr-2 text-sm font-medium'>
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant='outline'
-            className='relative h-8 w-8 p-0'
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-          >
-            <span className='sr-only'>Go to previous page</span>
-            <ChevronLeftIcon className='h-4 w-4' />
-          </Button>
-          <Button
-            variant='outline'
-            className='relative h-8 w-8 p-0'
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-          >
-            <span className='sr-only'>Go to next page</span>
-            <ChevronRightIcon className='h-4 w-4' />
-          </Button>
-        </div>
-      </div>
+      <ResponsivePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        rowsPerPage={rowsPerPage}
+        handleRowsPerPageChange={handleRowsPerPageChange}
+        goToNextPage={goToNextPage}
+        goToPreviousPage={goToPreviousPage}
+      />
     </section>
   );
 }

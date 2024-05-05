@@ -33,6 +33,7 @@ export function Sidebar({ content }: SidebarProps) {
             className='cursor-pointer'
             onClick={() => setIsOpen((previousOpen) => !previousOpen)}
           >
+            <span className='sr-only'>Toggle sidebar</span>
             <Menu />
           </button>
         </div>
@@ -46,6 +47,7 @@ export function Sidebar({ content }: SidebarProps) {
         }`}
         onClick={() => setIsOpen((previousOpen) => !previousOpen)}
       >
+        <span className='sr-only'>Toggle sidebar</span>
         <Menu />
       </button>
 

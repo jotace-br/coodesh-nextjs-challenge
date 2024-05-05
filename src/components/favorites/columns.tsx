@@ -18,6 +18,7 @@ export const columns: ColumnDef<IStation>[] = [
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
+          <span className='sr-only'>Sort by station name</span>
           Station
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
@@ -42,6 +43,7 @@ export const columns: ColumnDef<IStation>[] = [
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
+          <span className='sr-only'>Sort by country</span>
           Country
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>

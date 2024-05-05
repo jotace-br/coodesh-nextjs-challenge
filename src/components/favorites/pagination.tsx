@@ -33,12 +33,13 @@ export function DataTablePagination<TData>({
               table.setPageSize(Number(value));
             }}
           >
-            <SelectTrigger className='h-8 w-[70px]'>
+            <SelectTrigger className='h-8 w-[70px]' aria-label='Rows per page'>
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side='top'>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[10, 20, 50, 100].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
+                  <span className='sr-only'>Rows per page:</span>
                   {pageSize}
                 </SelectItem>
               ))}

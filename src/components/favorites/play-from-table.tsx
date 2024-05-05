@@ -58,6 +58,7 @@ export function PlayFromTable({ rowData }: PlayFromTableProps) {
         }`}
         disabled={isFetching}
       >
+        <span className='sr-only'>Play/pause station {rowData.name}</span>
         {renderPlayPauseButton()}
       </button>
     </div>
