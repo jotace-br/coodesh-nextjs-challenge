@@ -1,5 +1,6 @@
 'use client';
 
+import { stationClickCount } from 'api/stationClickCount';
 import React, {
   createContext,
   useContext,
@@ -102,7 +103,7 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const selectRadio = (radio: IRadio) => {
+  const selectRadio = async (radio: IRadio) => {
     try {
       if (radio === null) {
         setCurrentRadio(null);
@@ -114,16 +115,14 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error('This radio station is currently offline.');
       }
 
-      fetch(
-        `http://[2a03:4000:37:42:c4fe:4cff:fea7:8941]/json/url/${radio?.stationuuid}`
-      ).then((res) => {
-        if (res.ok) {
-          setCurrentRadio(radio);
-          setIsPlaying(true);
-        } else {
-          throw new Error('Failed to fetch the radio stream URL.');
-        }
-      });
+      const res = await stationClickCount({ stationuuid: radio.stationuuid });
+
+      if (!res.ok) {
+        console.info('Failed to update the radio station click count.');
+      }
+
+      setCurrentRadio(radio);
+      setIsPlaying(true);
     } catch (error) {
       toast.error('An error occurred while selecting the radio.', {
         description: error.message,
