@@ -56,7 +56,7 @@ export function PlayerCard({
                 className
               )}
             >
-              <CardHeader className='w-full flex flex-row items-start gap-2 p-0 z-10 select-none'>
+              <CardHeader className='w-full flex flex-row items-start gap-2 p-0 z-10 select-none cursor-pointer'>
                 <div className='flex items-center justify-center rounded-md bg-primary/20 w-[50px] h-[50px] flex-shrink-0'>
                   {station.favicon ? (
                     <Image
@@ -82,7 +82,7 @@ export function PlayerCard({
               </CardHeader>
 
               <CardContent className='w-full px-0 space-y-1 select-none'>
-                <Label className='line-clamp-3 leading-snug'>
+                <Label className='line-clamp-3 leading-snug cursor-pointer'>
                   {station.country} {station.state && ` / ${station.state}`}{' '}
                   {station.language && (
                     <span className='capitalize'>({station.language})</span>

@@ -36,7 +36,7 @@ export default function RootLayout({
             <Sidebar content={children} />
           </RadioProvider>
         </main>
-        <Toaster />
+        <Toaster position='top-right' />
       </body>
     </html>
   );
