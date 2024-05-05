@@ -10,12 +10,14 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@components/ui/form';
 import { Input } from '@components/ui/input';
+import { InputTags } from '@components/ui/multi-tag';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Info } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -26,6 +28,7 @@ import { z } from 'zod';
 const formSchema = z.object({
   name: z.string().nonempty('Station name is required'),
   country: z.string().nonempty('Country is required'),
+  tags: z.array(z.string()).default([]),
 });
 
 interface EditContentDialogProps {
@@ -44,6 +47,7 @@ export function EditContentDialog({
     defaultValues: {
       name: station.name.trim(),
       country: station.country.trim(),
+      tags: station.tags.split(','),
     },
   });
 
@@ -53,6 +57,7 @@ export function EditContentDialog({
         ...station,
         name: values.name,
         country: values.country,
+        tags: values.tags.join(','),
       });
       setIsEditing(false);
     } catch (error) {
@@ -63,7 +68,7 @@ export function EditContentDialog({
   };
 
   return (
-    <DialogContent className='sm:max-w-[425px]'>
+    <DialogContent className='sm:max-w-[425px] max-h-screen overflow-y-auto'>
       <DialogHeader>
         <DialogTitle>Edit station</DialogTitle>
         <DialogDescription>
@@ -71,7 +76,7 @@ export function EditContentDialog({
           done.
         </DialogDescription>
       </DialogHeader>
-      <div className='grid gap-2 py-2'>
+      <div className='grid gap-2 py-2 max-h-[calc(100vh - 20rem)] overflow-y-auto'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <FormField
@@ -96,6 +101,21 @@ export function EditContentDialog({
                   <FormControl>
                     <Input placeholder='Enter country' {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='tags'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <InputTags {...field} />
+                  </FormControl>
+                  <FormDescription>Current tags above</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
