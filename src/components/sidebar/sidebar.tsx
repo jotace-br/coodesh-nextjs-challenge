@@ -9,37 +9,39 @@ interface SidebarProps {
 
 export function Sidebar({ content }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [prevWidth, setPrevWidth] = useState(window.innerWidth);
+  const [prevWidth, setPrevWidth] = useState<number | null>(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
+    if (typeof window !== 'undefined') {
+      const handleResize = () => {
+        const currentWidth = window.innerWidth;
 
-      // If the screen width changes view mode (mobile/desktop), update isOpen
-      if (
-        (prevWidth >= 768 && currentWidth < 768) ||
-        (prevWidth < 768 && currentWidth >= 768)
-      ) {
-        const shouldBeOpen = currentWidth >= 768;
-        setIsOpen(shouldBeOpen);
-      }
+        // If the screen width changes view mode (mobile/desktop), update isOpen
+        if (
+          (prevWidth >= 768 && currentWidth < 768) ||
+          (prevWidth < 768 && currentWidth >= 768)
+        ) {
+          const shouldBeOpen = currentWidth >= 768;
+          setIsOpen(shouldBeOpen);
+        }
 
-      document.body.style.overflow =
-        currentWidth < 768 ? (isOpen ? 'hidden' : 'visible') : 'visible';
+        document.body.style.overflow =
+          currentWidth < 768 ? (isOpen ? 'hidden' : 'visible') : 'visible';
 
-      // Update previous width
-      setPrevWidth(currentWidth);
-    };
+        // Update previous width
+        setPrevWidth(currentWidth);
+      };
 
-    window.addEventListener('resize', handleResize);
+      window.addEventListener('resize', handleResize);
 
-    // Initial setup
-    handleResize();
+      // Initial setup
+      handleResize();
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      document.body.style.overflow = 'visible';
-    };
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        document.body.style.overflow = 'visible';
+      };
+    }
   }, [isOpen, prevWidth]);
 
   const toggleSidebar = () => {
