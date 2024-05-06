@@ -105,6 +105,11 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const selectRadio = async (radio: IRadio) => {
     try {
+      if (radio === currentRadio) {
+        playPause();
+        return;
+      }
+
       if (radio === null) {
         setCurrentRadio(null);
         setIsPlaying(false);

@@ -17,8 +17,8 @@ export function Player() {
 
   useEffect(() => {
     if (audioRef.current && currentRadio) {
-      handleIsFetching(true);
       clearTimeout(audioWaitingTimeout);
+      handleIsFetching(true);
 
       audioRef.current.src = currentRadio.url_resolved || currentRadio.url;
       audioRef.current.volume = volume[0] / 100;
@@ -26,12 +26,24 @@ export function Player() {
       audioRef.current.addEventListener('loadeddata', handleAudioLoadedData);
       audioRef.current.addEventListener('waiting', handleAudioWaiting);
       audioRef.current.addEventListener('canplay', handleAudioCanPlay);
+      audioRef.current.addEventListener('error', handleOnError);
 
       audioRef.current
         .play()
         .then(() => {
-          handleIsFetching(false);
           clearTimeout(audioWaitingTimeout);
+          handleIsFetching(false);
+        })
+        .catch((error) => {
+          handleIsFetching(false);
+          toast.error('Failed to connect to the radio station.', {
+            description: error.message,
+            dismissible: false,
+            action: {
+              label: 'Retry',
+              onClick: handleRetry,
+            },
+          });
         })
         .finally(() => {
           handleIsFetching(false);
@@ -44,6 +56,7 @@ export function Player() {
         );
         audioRef.current.removeEventListener('waiting', handleAudioWaiting);
         audioRef.current.removeEventListener('canplay', handleAudioCanPlay);
+        audioRef.current.removeEventListener('error', handleOnError);
       };
     }
   }, [currentRadio]);
@@ -54,6 +67,7 @@ export function Player() {
   };
 
   const handleAudioWaiting = () => {
+    clearTimeout(audioWaitingTimeout);
     handleIsFetching(true);
 
     audioWaitingTimeout = setTimeout(() => {
@@ -61,6 +75,7 @@ export function Player() {
 
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.src = '';
       }
 
       selectRadio(null);
@@ -105,6 +120,20 @@ export function Player() {
         error: `Failed to connect to ${currentRadio.name}.`,
       }
     );
+  };
+
+  const handleOnError = () => {
+    clearTimeout(audioWaitingTimeout);
+    handleIsFetching(false);
+
+    toast.error('Failed to connect to the radio station.', {
+      description: 'An error occurred while connecting to the radio station.',
+      dismissible: false,
+      action: {
+        label: 'Retry',
+        onClick: handleRetry,
+      },
+    });
   };
 
   return (
