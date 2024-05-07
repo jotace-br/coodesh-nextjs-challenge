@@ -1,10 +1,19 @@
-import { Skeleton } from '@components/ui/skeleton';
 import { useRadio } from 'contexts/radio-context';
 import { Radio } from 'lucide-react';
 import Image from 'next/image';
 
 export function PlayerRadioInfo() {
   const { isPlaying, isFetching, currentRadio } = useRadio();
+
+  const currentStateLabel = () => {
+    if (isFetching) {
+      return 'Connecting to';
+    }
+    if (isPlaying) {
+      return 'Current playing';
+    }
+    return 'Paused';
+  };
 
   return (
     <>
@@ -26,23 +35,14 @@ export function PlayerRadioInfo() {
 
       <section className='flex items-start gap-2'>
         <div className='flex-col'>
-          {isFetching ? (
-            <Skeleton className='w-36 h-4 mb-2 bg-stone-600/20' />
-          ) : (
-            <p className={'first-letter:uppercase text-normal font-semibold'}>
-              {isPlaying ? 'Current playing' : 'Paused'}:{' '}
-              {currentRadio?.name || 'No radio selected'}
-            </p>
-          )}
+          <p className={'first-letter:uppercase text-normal font-semibold'}>
+            {currentStateLabel()}: {currentRadio?.name || 'No radio selected'}
+          </p>
 
-          {isFetching ? (
-            <Skeleton className='w-24 h-4 bg-stone-600/20' />
-          ) : (
-            currentRadio?.country && (
-              <p className='first-letter:uppercase text-xs text-stone-300'>
-                {currentRadio?.country || 'Unknown country'}
-              </p>
-            )
+          {currentRadio?.country && (
+            <p className='first-letter:uppercase text-xs text-stone-300'>
+              {currentRadio?.country || 'Unknown country'}
+            </p>
           )}
         </div>
       </section>

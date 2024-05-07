@@ -47,7 +47,7 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const [favorites, setFavorites] = useState<IRadio[]>([]);
   const [isFetching, setIsFetching] = useState(false);
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -92,13 +92,17 @@ export const RadioProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const playPause = () => {
+    if (!audioRef.current) {
+      return;
+    }
+
     setIsPlaying(!isPlaying);
 
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        return;
-      }
+    if (isPlaying) {
+      audioRef.current.pause();
+      return;
+    } else {
+      audioRef.current.load();
       audioRef.current.play();
     }
   };
