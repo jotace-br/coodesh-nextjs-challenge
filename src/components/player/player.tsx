@@ -1,6 +1,6 @@
 'use client';
 import { useRadio } from 'contexts/radio-context';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { PlayerAddRadioToFavorites } from './player-add-radio-to-favorites';
 import { PlayerPlayPauseBtn } from './player-play-pause-btn';
@@ -10,74 +10,72 @@ import { PlayerVolume } from './player-volume';
 const WAITING_TIMEOUT = 3000 * 10; // 30s = 3000 * 10
 
 export function Player() {
-  let audioWaitingTimeout: NodeJS.Timeout;
+  const {
+    volume,
+    currentRadio,
+    selectRadio,
+    audioRef,
+    handleIsFetching,
+    playPause,
+    isPlaying,
+  } = useRadio();
 
-  const { volume, currentRadio, selectRadio, audioRef, handleIsFetching } =
-    useRadio();
+  const isPlayingRef = useRef(false);
+  const audioWaitingTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    if (audioRef.current && currentRadio) {
-      clearTimeout(audioWaitingTimeout);
-      handleIsFetching(true);
-
-      audioRef.current.src = currentRadio.url_resolved || currentRadio.url;
-      audioRef.current.volume = volume[0] / 100;
-
-      audioRef.current.addEventListener('loadeddata', handleAudioLoadedData);
-      audioRef.current.addEventListener('waiting', handleAudioWaiting);
-      audioRef.current.addEventListener('canplay', handleAudioCanPlay);
-      audioRef.current.addEventListener('error', handleOnError);
-
-      audioRef.current
-        .play()
-        .then(() => {
-          clearTimeout(audioWaitingTimeout);
-          handleIsFetching(false);
-        })
-        .catch((error) => {
-          handleIsFetching(false);
-          toast.error('Failed to connect to the radio station.', {
-            description: error.message,
-            dismissible: false,
-            action: {
-              label: 'Retry',
-              onClick: handleRetry,
-            },
-          });
-        })
-        .finally(() => {
-          handleIsFetching(false);
-        });
-
-      return () => {
-        audioRef.current.removeEventListener(
-          'loadeddata',
-          handleAudioLoadedData
-        );
-        audioRef.current.removeEventListener('waiting', handleAudioWaiting);
-        audioRef.current.removeEventListener('canplay', handleAudioCanPlay);
-        audioRef.current.removeEventListener('error', handleOnError);
-      };
+  const clearAudioTimeout = useCallback(() => {
+    if (audioWaitingTimeout.current) {
+      clearTimeout(audioWaitingTimeout.current);
+      audioWaitingTimeout.current = null;
     }
-  }, [currentRadio]);
+  }, []);
 
-  const handleAudioLoadedData = () => {
-    clearTimeout(audioWaitingTimeout);
-    handleIsFetching(false);
-  };
-
-  const handleAudioWaiting = () => {
-    clearTimeout(audioWaitingTimeout);
-    handleIsFetching(true);
-
-    audioWaitingTimeout = setTimeout(() => {
+  const playAudio = useCallback(async () => {
+    try {
+      await audioRef.current?.play();
+      clearAudioTimeout();
+      handleIsFetching(false);
+      isPlayingRef.current = true;
+    } catch (error) {
+      isPlayingRef.current = false;
       handleIsFetching(false);
 
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-      }
+      toast.error('Failed to connect to the radio station.', {
+        description: error.message,
+        dismissible: false,
+        action: {
+          label: 'Retry',
+          onClick: handleRetry,
+        },
+      });
+    }
+  }, [clearAudioTimeout, audioRef, handleIsFetching]);
 
+  const handlePlayPause = useCallback(
+    (e: Event) => {
+      e.preventDefault();
+      isPlayingRef.current = !audioRef.current?.paused;
+      handleIsFetching(true);
+      playPause();
+      handleIsFetching(false);
+    },
+    [audioRef, handleIsFetching, playPause]
+  );
+
+  const handleAudioLoadedData = useCallback(() => {
+    clearAudioTimeout();
+    handleIsFetching(false);
+  }, [clearAudioTimeout, handleIsFetching]);
+
+  const handleAudioWaiting = useCallback(() => {
+    const audio = audioRef.current;
+    clearAudioTimeout();
+    handleIsFetching(true);
+
+    audioWaitingTimeout.current = setTimeout(() => {
+      handleIsFetching(false);
+      audio?.pause();
+      audio.src = '';
       selectRadio(null);
 
       toast.error('Long duration elapsed without audio.', {
@@ -89,16 +87,15 @@ export function Player() {
         },
       });
     }, WAITING_TIMEOUT);
-  };
+  }, [audioRef, clearAudioTimeout, handleIsFetching, selectRadio]);
 
-  const handleAudioCanPlay = () => {
-    clearTimeout(audioWaitingTimeout);
+  const handleAudioCanPlay = useCallback(() => {
+    clearAudioTimeout();
     handleIsFetching(false);
-  };
+  }, [clearAudioTimeout, handleIsFetching]);
 
-  const handleRetry = async () => {
-    clearTimeout(audioWaitingTimeout);
-
+  const handleRetry = useCallback(async () => {
+    clearAudioTimeout();
     toast.promise(
       (async () => {
         try {
@@ -120,10 +117,10 @@ export function Player() {
         error: `Failed to connect to ${currentRadio.name}.`,
       }
     );
-  };
+  }, [clearAudioTimeout, currentRadio, handleIsFetching, selectRadio]);
 
-  const handleOnError = () => {
-    clearTimeout(audioWaitingTimeout);
+  const handleOnError = useCallback(() => {
+    clearAudioTimeout();
     handleIsFetching(false);
 
     toast.error('Failed to connect to the radio station.', {
@@ -134,7 +131,51 @@ export function Player() {
         onClick: handleRetry,
       },
     });
-  };
+  }, [clearAudioTimeout, handleIsFetching]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (audio && currentRadio) {
+      clearAudioTimeout();
+      handleIsFetching(true);
+
+      audio.src = currentRadio.url_resolved || currentRadio.url;
+      audio.volume = volume[0] / 100;
+
+      audio.addEventListener('loadeddata', handleAudioLoadedData);
+      audio.addEventListener('waiting', handleAudioWaiting);
+      audio.addEventListener('canplay', handleAudioCanPlay);
+      audio.addEventListener('error', handleOnError);
+
+      playAudio();
+
+      return () => {
+        audio.removeEventListener('loadeddata', handleAudioLoadedData);
+        audio.removeEventListener('waiting', handleAudioWaiting);
+        audio.removeEventListener('canplay', handleAudioCanPlay);
+        audio.removeEventListener('error', handleOnError);
+        clearAudioTimeout();
+      };
+    }
+  }, [currentRadio]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.addEventListener('pause', handlePlayPause);
+    } else {
+      audio.addEventListener('play', handlePlayPause);
+    }
+
+    return () => {
+      audio.removeEventListener('pause', handlePlayPause);
+      audio.removeEventListener('play', handlePlayPause);
+    };
+  }, [isPlaying, currentRadio]);
 
   return (
     <div className='fill-available w-full h-40 fixed bottom-0 content-center sm:h-20 bg-sidebar p-4'>
